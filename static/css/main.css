@@ -1,0 +1,116 @@
+/* --- Global Styles --- */
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f6fa;  /* light modern background */
+    color: #333;
+    padding: 40px;
+}
+
+/* --- Form Styles --- */
+form {
+    background-color: #ffffff;
+    max-width: 400px;
+    margin: auto;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* soft shadow */
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* space between inputs */
+}
+
+/* Labels */
+label {
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="number"],
+input[type="date"] {
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 6px rgba(74,144,226,0.3);
+}
+
+/* Placeholder */
+input::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Submit Button */
+input[type="submit"] {
+    padding: 12px;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    background-color: #4a90e2;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+input[type="submit"]:hover {
+    background-color: #357ab8;
+}
+
+input[type="submit"]:active {
+    transform: scale(0.98);
+}
+
+/* --- Table Styles --- */
+.table-container {
+    max-width: 800px;
+    margin: 50px auto 0;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+}
+
+th {
+    background-color: #4a90e2;
+    color: white;
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: #f1f3f6;
+}
+
+tr:hover {
+    background-color: #e6f0ff;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    form, .table-container {
+        padding: 20px;
+        width: 90%;
+    }
+}
