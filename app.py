@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, flash
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 import os
@@ -9,30 +9,67 @@ load_dotenv()
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 db = SQLAlchemy(app)
 
-class Todo(db.Model):
+class newtrail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(32), nullable=False)
-    password = db.Column(db.String(200), nullable=False)
     trailname = db.Column(db.String(200), nullable=False)
-    coordinates = db.Column(db.String(200), nullable=False)
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    latitude = db.Column(db.String(200), nullable=False)
+    longitude = db.Column(db.String(200), nullable=False)
+    date_added = db.Column(db.String(10), nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return '<Task %r>' % self.id
 
-with app.app_context():
-    db.create_all()
+'''with app.app_context():
+    db.create_all()'''
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'POST':
-        content = request.form['content']
+        trail_name_input = request.form['trailname'].strip()
+        latitude_input = request.form['latitude'].strip()
+        longitude_input = request.form['longitude'].strip()
+        adddate_input = request.form['adddate'].strip()
+
+        if not trail_name_input or not latitude_input or not longitude_input or not adddate_input:
+            flash('All fields are required!')
+            return redirect('/')
+
+
+        new_trail = newtrail(
+            trailname=trail_name_input,
+            latitude=latitude_input,
+            longitude=longitude_input,
+            date_added=adddate_input
+        )
+
+        try:
+            db.session.add(new_trail)
+            db.session.commit()
+            return redirect('/')
+        except:
+            return 'These was a problem with your submission'
 
 
     else:
-        return render_template('index.html')
+        trails = newtrail.query.order_by(newtrail.date_created).all()
+        return render_template('index.html', trails = trails)
+
+
+@app.route('/delete/<int:id>')
+def delete(id):
+    trail_to_delete = newtrail.query.get_or_404(id)
+
+    try:
+        db.session.delete(trail_to_delete)
+        db.session.commit()
+        return redirect('/')
+    except:
+        flash('There was a problem deleting the trail')
+        return redirect('/')
 
 if __name__ == "__main__":
     app.run(debug = True)
