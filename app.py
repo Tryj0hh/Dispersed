@@ -17,14 +17,14 @@ class newtrail(db.Model):
     trailname = db.Column(db.String(200), nullable=False)
     latitude = db.Column(db.String(200), nullable=False)
     longitude = db.Column(db.String(200), nullable=False)
-    date_added = db.Column(db.String(10), nullable=False)
+    date_traveled = db.Column(db.String(10), nullable=False)
     date_created = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
         return '<Task %r>' % self.id
 
-'''with app.app_context():
-    db.create_all()'''
+with app.app_context():
+    db.create_all()
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -32,9 +32,9 @@ def index():
         trail_name_input = request.form['trailname'].strip()
         latitude_input = request.form['latitude'].strip()
         longitude_input = request.form['longitude'].strip()
-        adddate_input = request.form['adddate'].strip()
+        date_traveled_input = request.form['date_traveled'].strip()
 
-        if not trail_name_input or not latitude_input or not longitude_input or not adddate_input:
+        if not trail_name_input or not latitude_input or not longitude_input or not date_traveled_input:
             flash('All fields are required!')
             return redirect('/')
 
@@ -43,7 +43,7 @@ def index():
             trailname=trail_name_input,
             latitude=latitude_input,
             longitude=longitude_input,
-            date_added=adddate_input
+            date_traveled=date_traveled_input
         )
 
         try:
@@ -68,8 +68,33 @@ def delete(id):
         db.session.commit()
         return redirect('/')
     except:
-        flash('There was a problem deleting the trail')
+        flash('There was a problem deleting this trail')
         return redirect('/')
+
+
+@app.route('/update/<int:id>', methods=['GET', 'POST'])
+def update(id):
+    trails = newtrail.query.get_or_404(id)
+
+    if request.method == 'POST':
+        trails.trailname = request.form['trailname'].strip()
+        trails.latitude = request.form['latitude'].strip()
+        trails.longitude = request.form['longitude'].strip()
+        trails.date_traveled = request.form['date_traveled'].strip()
+        try:
+            db.session.commit()
+            return redirect('/')
+        except:
+            flash('There was a problem updating this trail')
+            return redirect('/')
+
+    else:
+        return render_template('update.html', trails = trails)
+
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug = True)
