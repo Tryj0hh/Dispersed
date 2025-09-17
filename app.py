@@ -23,8 +23,8 @@ class newtrail(db.Model):
     def __repr__(self):
         return '<Task %r>' % self.id
 
-with app.app_context():
-    db.create_all()
+'''with app.app_context():
+    db.create_all()'''
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
