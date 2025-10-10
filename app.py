@@ -1,8 +1,9 @@
-from flask import Flask, render_template, url_for, request, redirect, flash
-from flask_sqlalchemy import SQLAlchemy
-from dotenv import load_dotenv
+'''App file that handles db creation and updating, app routes and POST/GET requests'''
 import os
 from datetime import datetime
+from flask import Flask, render_template, request, redirect, flash
+from flask_sqlalchemy import SQLAlchemy
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -12,7 +13,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("SQLALCHEMY_DATABASE_URI")
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 db = SQLAlchemy(app)
 
-class newtrail(db.Model):
+class NewTrail(db.Model):
+    '''db model. Delcares element names and types'''
     id = db.Column(db.Integer, primary_key=True)
     trailname = db.Column(db.String(200), nullable=False)
     latitude = db.Column(db.String(200), nullable=False)
@@ -22,9 +24,6 @@ class newtrail(db.Model):
 
     def __repr__(self):
         return '<Task %r>' % self.id
-
-'''with app.app_context():
-    db.create_all()'''
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -39,7 +38,7 @@ def index():
             return redirect('/')
 
 
-        new_trail = newtrail(
+        new_trail = NewTrail(
             trailname=trail_name_input,
             latitude=latitude_input,
             longitude=longitude_input,
@@ -55,13 +54,13 @@ def index():
 
 
     else:
-        trails = newtrail.query.order_by(newtrail.date_created).all()
+        trails = NewTrail.query.order_by(NewTrail.date_created).all()
         return render_template('index.html', trails = trails)
 
 
 @app.route('/delete/<int:id>')
 def delete(id):
-    trail_to_delete = newtrail.query.get_or_404(id)
+    trail_to_delete = NewTrail.query.get_or_404(id)
 
     try:
         db.session.delete(trail_to_delete)
@@ -74,7 +73,7 @@ def delete(id):
 
 @app.route('/update/<int:id>', methods=['GET', 'POST'])
 def update(id):
-    trails = newtrail.query.get_or_404(id)
+    trails = NewTrail.query.get_or_404(id)
 
     if request.method == 'POST':
         trails.trailname = request.form['trailname'].strip()
