@@ -1,58 +1,70 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% block title %}My Trails{% endblock %}
+{% block content %}
 
-{% block head %}
+<h2 class="mb-4 text-center">Your Logged Trails</h2>
 
-{% endblock %}
+<!-- Form to add a new trail -->
+<form method="POST" action="/" autocomplete="off">
+    <div class="row g-3 mb-3">
+        <div class="col-md-6">
+            <input type="text" name="trailname" class="form-control" placeholder="Trail Name" required>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="latitude" class="form-control" placeholder="Latitude" required>
+        </div>
+        <div class="col-md-3">
+            <input type="text" name="longitude" class="form-control" placeholder="Longitude" required>
+        </div>
+    </div>
 
-{% block body %}
-<div class="content">
-    <h1>Dispersed</h1>
-    {% if trails|length < 1 %}
-    <h4>No trails have been added</h4>
-    {% else %}
-    <table>
-        <tr>
-            <th>Trail name</th>
-            <th>Latitude</th>
-            <th>Longitude</th>
-            <th>Date Traveled</th>
-            <th>Actions</th>
-        </tr>
-        {% for trail in trails %}
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <label class="form-label">Date Traveled</label>
+            <input 
+                type="date" 
+                name="date_traveled" 
+                class="form-control" 
+                required
+            >
+        </div>
+        <div class="col-md-6 d-flex align-items-end">
+            <button type="submit" class="btn btn-success w-100">Add Trail</button>
+        </div>
+    </div>
+</form>
+
+<!-- Trail list -->
+{% if trails %}
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-light">
             <tr>
-                <td>{{ trail.trailname }}</td>
-                <td>{{ trail.latitude}}</td>
-                <td>{{ trail.longitude }}</td>
-                <td>{{ trail.date_traveled }}</td>
-                <td>
-                    <a href="https://www.google.com/maps?q={{ trail.latitude }},{{ trail.longitude }}" target="_blank">Waypoint</a>
-                    <br>
-                    <a href="/update/{{trail.id}}">Update</a>
-                    <br>
-                    <a href="/delete/{{trail.id}}">Delete</a>
-                </td>
+                <th>Trail Name</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                <th>Date Traveled</th>
+                <th>Date Created</th>
+                <th>Actions</th>
             </tr>
-        {% endfor %}
-    </table>
-    {% endif %}
-    
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class="flashes">
-            {% for message in messages %}
-                <li>{{ message }}</li>
+        </thead>
+        <tbody>
+            {% for trail in trails %}
+                <tr>
+                    <td>{{ trail.trailname }}</td>
+                    <td>{{ trail.latitude }}</td>
+                    <td>{{ trail.longitude }}</td>
+                    <td>{{ trail.date_traveled }}</td>
+                    <td>{{ trail.date_created.strftime("%Y-%m-%d") }}</td>
+                    <td>
+                        <a href="{{ url_for('update', id=trail.id) }}" class="btn btn-sm btn-primary">Edit</a>
+                        <a href="{{ url_for('delete', id=trail.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Delete this trail?')">Delete</a>
+                    </td>
+                </tr>
             {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
-    <form action ="/" method="POST" autocomplete="off">
-        <input type="text" name="trailname" id="trailname" placeholder="Enter Trailname" required>
-        <input type="number" name="latitude" id="latitude" placeholder="Enter Latitude" step="any" required>
-        <input type="number" name="longitude" id="longitude" placeholder="Enter Longitude" step="any" required>
-        <input type="date" name="date_traveled" id="date_traveled" required>
+        </tbody>
+    </table>
+{% else %}
+    <p class="text-center text-muted">No trails logged yet. Add one above!</p>
+{% endif %}
 
-        <input type="submit" value="Add Trail">
-    </form>
-    
-</div>
 {% endblock %}
